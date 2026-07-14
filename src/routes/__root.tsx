@@ -87,10 +87,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         property: "og:description",
         content:
-          "A family estate crafting single-vineyard Médoc wines since 1897.",
+          "A family estate crafting single-vineyard Médoc wines since 1897. Slow, honest, unforgettable.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Maison Noir — Wine for those who love to live" },
+      { name: "twitter:description", content: "A family estate crafting single-vineyard Médoc wines since 1897. Slow, honest, unforgettable." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/cb835472-03c8-4e77-bdee-128f7da14a30/id-preview-e8e67362--8adccaae-57e9-4595-b8b8-cedd57845cc5.lovable.app-1784043083703.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/cb835472-03c8-4e77-bdee-128f7da14a30/id-preview-e8e67362--8adccaae-57e9-4595-b8b8-cedd57845cc5.lovable.app-1784043083703.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
