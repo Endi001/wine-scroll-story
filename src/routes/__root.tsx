@@ -96,20 +96,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/cb835472-03c8-4e77-bdee-128f7da14a30/id-preview-e8e67362--8adccaae-57e9-4595-b8b8-cedd57845cc5.lovable.app-1784043083703.png" },
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/cb835472-03c8-4e77-bdee-128f7da14a30/id-preview-e8e67362--8adccaae-57e9-4595-b8b8-cedd57845cc5.lovable.app-1784043083703.png" },
     ],
-    scripts: [
-      {
-        src: "https://www.googletagmanager.com/gtag/js?id=G-60Y4SQEQGH",
-        async: true,
-      },
-      {
-        innerHTML: `
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', 'G-60Y4SQEQGH');
-        `,
-      },
-    ],
     links: [
       { rel: "stylesheet", href: appCss },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
@@ -131,6 +117,20 @@ function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <head>
+        <script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-60Y4SQEQGH"
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-60Y4SQEQGH');
+            `,
+          }}
+        />
         <HeadContent />
       </head>
       <body>
