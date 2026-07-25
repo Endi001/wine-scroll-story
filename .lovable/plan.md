@@ -1,32 +1,54 @@
 ## Goal
-Make the scroll-driven hero video feel like buttery 60fps playback instead of the current stuttery scrub.
+Add a second route `/bulk` with a real-time bulk-order calculator, linked from the top bar to the left of "Contact". Match the existing dark burgundy/gold aesthetic.
 
-## Why it stutters today
-- We set `video.currentTime` directly on scroll — browsers only decode keyframes quickly, so jumping to arbitrary timestamps produces visible stepping.
-- The RAF easing (`diff * 0.15`) with a 0.02s deadband still snaps to whatever frame the decoder can seek to, and long-GOP MP4s (like the Pexels source) decode slowly on seek.
-- Scroll height (220vh) is short, so each scroll pixel maps to a large time jump.
+## Nav change (`src/components/site/TopBar.tsx`)
+- Replace the single `#contact` anchor with two links, in order: `Bulk` (TanStack `<Link to="/bulk">`) then `Contact` (`<Link to="/">` with hash `#contact`, or anchor when on `/`).
+- Same uppercase-tracked style; gold hover underline preserved.
+- Logo continues to link home.
 
-## Approach
-Move from "seek on scroll" to "smoothly interpolated playbackRate + longer scroll runway", plus a decoder-friendly source.
+## New route (`src/routes/bulk.tsx`)
+- `createFileRoute("/bulk")` with its own `head()` — title "Bulk Orders — Maison Noir", matching description, og/twitter title+description. No og:image (no hero visual).
+- Layout: `<TopBar />`, main section, `<SiteFooter />` — same page shell pattern as index.
 
-### 1. Re-encode the hero clip for smooth scrubbing (in `src/assets/`)
-Serve an MP4 with an all-intra / very short GOP so every frame is a keyframe — this is the single biggest win for scrub smoothness. Also emit a WebM/VP9 fallback. Both encoded at 60fps from the existing Pexels source, `-g 1` (all keyframes), `+faststart`, ~8 Mbps. Replace the current `hero-wine.mp4.asset.json` with the new all-intra MP4 and add `hero-wine.webm.asset.json`.
+## Calculator component (`src/components/site/BulkCalculator.tsx`)
+Card centered in a max-w container, styled like existing sections (border, muted background, gold accents, Cormorant display headings).
 
-### 2. Rework `ScrollVideoHero.tsx` scrubbing loop
-- Increase section height from `220vh` to `360vh` so each frame gets more scroll distance (finer granularity).
-- Keep a `targetTime` updated on scroll, but drive `currentTime` from a persistent `requestAnimationFrame` loop that always runs while the hero is in view (not only when diff > threshold) — this keeps updates locked to the display's 60/120Hz refresh.
-- Use time-based smoothing (exponential ease with a per-frame `1 - Math.exp(-dt / tau)` factor, tau ≈ 90ms) instead of fixed `0.15` — frame-rate independent and visibly smoother.
-- Add `<source>` tags for WebM first, MP4 second, so Chromium/Firefox pick the cheaper-to-seek encode.
-- Add `disableRemotePlayback`, keep `preload="auto"`, and call `video.play().then(() => video.pause())` once after metadata to prime the decoder pipeline on Safari/iOS.
-- Pause the RAF loop via `IntersectionObserver` when the hero scrolls out of view.
+State:
+- `quantity` (number, default 25), controlled by a slider input.
 
-### 3. No visual/content changes
-Headline, overlays, layout, colors, and copy stay exactly as they are. This is purely a smoothness fix.
+Constants:
+- Wine name: "Cuvée Noir 2019" (single product).
+- Unit price: €48.
+- Bulk discount: 5% flat on all orders 10–100.
 
-## Files touched
-- `src/assets/hero-wine.mp4.asset.json` (replace with all-intra re-encode)
-- `src/assets/hero-wine.webm.asset.json` (new)
-- `src/components/site/ScrollVideoHero.tsx` (rewritten scrub loop + `<source>` tags + taller section)
+UI structure inside the card:
+1. Small uppercase-tracked eyebrow "Bulk Orders".
+2. Display heading with wine name.
+3. Quantity slider (shadcn `Slider`) min 10, max 100, step 1. Current quantity shown large next to "bottles".
+4. Live totals block:
+   - Subtotal = quantity × unitPrice
+   - Discount (5%) = subtotal × 0.05 — labelled "You save"
+   - Total = subtotal − discount, large gold number
+5. Cost breakdown list (rows with label + value, thin divider rows):
+   - Wine · Cuvée Noir 2019
+   - Unit price · €48.00
+   - Quantity · N bottles
+   - Subtotal · €X
+   - Bulk discount (5%) · −€X
+   - Total · €X (emphasized)
+6. CTA button styled like the Contact form's submit ("Call us to order") — links to `tel:+33556001234` (the number already in the footer).
+
+All values formatted via `Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR' })`.
+
+## Design consistency
+- Reuse existing tokens: `bg-background`, `text-foreground`, `text-accent`, `border-border/40`, `font-display`, uppercase `tracking-[0.3em/0.4em]` eyebrows.
+- Slider: use existing shadcn `@/components/ui/slider`; if not present, add it (shadcn primitive, no new deps).
+- Fade-up entrance using `animate-fade-up` utility already defined in `styles.css`.
+
+## Files
+- New: `src/routes/bulk.tsx`, `src/components/site/BulkCalculator.tsx`
+- Edited: `src/components/site/TopBar.tsx` (add Bulk link, switch to TanStack `Link`)
+- Possibly new: `src/components/ui/slider.tsx` if not already in the project
 
 ## Out of scope
-No changes to About, Contact, Footer, TopBar, theme, or fonts.
+No changes to hero, About, Contact form, footer content, theme, or fonts. No backend — CTA is a `tel:` link.
