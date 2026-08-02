@@ -1,54 +1,35 @@
 ## Goal
-Add a second route `/bulk` with a real-time bulk-order calculator, linked from the top bar to the left of "Contact". Match the existing dark burgundy/gold aesthetic.
+Add a sticky section navigator to the home page: a fixed vertical rail that lists the page's sections, lets you click to jump, and highlights the section currently in view.
 
-## Nav change (`src/components/site/TopBar.tsx`)
-- Replace the single `#contact` anchor with two links, in order: `Bulk` (TanStack `<Link to="/bulk">`) then `Contact` (`<Link to="/">` with hash `#contact`, or anchor when on `/`).
-- Same uppercase-tracked style; gold hover underline preserved.
-- Logo continues to link home.
+## Sections tracked (home page)
+- Hero ("Wine is for those who love to live") — `#top` / hero section
+- Our Story — `#about`
+- Get in Touch — `#contact`
 
-## New route (`src/routes/bulk.tsx`)
-- `createFileRoute("/bulk")` with its own `head()` — title "Bulk Orders — Maison Noir", matching description, og/twitter title+description. No og:image (no hero visual).
-- Layout: `<TopBar />`, main section, `<SiteFooter />` — same page shell pattern as index.
+The hero section needs an `id` (e.g. `id="hero"`) so it can be targeted; About and Contact already have ids.
 
-## Calculator component (`src/components/site/BulkCalculator.tsx`)
-Card centered in a max-w container, styled like existing sections (border, muted background, gold accents, Cormorant display headings).
+## Component: `src/components/site/SectionRail.tsx`
+- Fixed position, vertically centered on the right edge (`fixed right-8 top-1/2 -translate-y-1/2 z-40`), so it stays in place through the whole scroll.
+- One row per section: a short horizontal tick line plus the section label.
+- Clicking a row scrolls smoothly to that section (`scrollIntoView({ behavior: "smooth" })`), and updates the hash.
+- Active state tracked with an `IntersectionObserver` over the three section elements, picking the one most in view (rootMargin tuned so the active item flips near the vertical middle of the viewport).
+- Hidden below `lg` (mobile keeps the clean full-bleed hero); the top bar still covers navigation there.
 
-State:
-- `quantity` (number, default 25), controlled by a slider input.
+## Design
+Reuses existing tokens only — no new colors:
+- Inactive: `text-muted-foreground`, tick line `bg-border/60`, label at `text-[10px] uppercase tracking-[0.3em]` to match the site's eyebrow style.
+- Active: `text-accent` (gold), tick line widens and turns `bg-accent`.
+- No panel/background box — just the rail floating over the dark background, matching the site's minimal feel.
 
-Constants:
-- Wine name: "Cuvée Noir 2019" (single product).
-- Unit price: €48.
-- Bulk discount: 5% flat on all orders 10–100.
-
-UI structure inside the card:
-1. Small uppercase-tracked eyebrow "Bulk Orders".
-2. Display heading with wine name.
-3. Quantity slider (shadcn `Slider`) min 10, max 100, step 1. Current quantity shown large next to "bottles".
-4. Live totals block:
-   - Subtotal = quantity × unitPrice
-   - Discount (5%) = subtotal × 0.05 — labelled "You save"
-   - Total = subtotal − discount, large gold number
-5. Cost breakdown list (rows with label + value, thin divider rows):
-   - Wine · Cuvée Noir 2019
-   - Unit price · €48.00
-   - Quantity · N bottles
-   - Subtotal · €X
-   - Bulk discount (5%) · −€X
-   - Total · €X (emphasized)
-6. CTA button styled like the Contact form's submit ("Call us to order") — links to `tel:+33556001234` (the number already in the footer).
-
-All values formatted via `Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR' })`.
-
-## Design consistency
-- Reuse existing tokens: `bg-background`, `text-foreground`, `text-accent`, `border-border/40`, `font-display`, uppercase `tracking-[0.3em/0.4em]` eyebrows.
-- Slider: use existing shadcn `@/components/ui/slider`; if not present, add it (shadcn primitive, no new deps).
-- Fade-up entrance using `animate-fade-up` utility already defined in `styles.css`.
+## Animation
+- Tick line grows from ~16px to ~40px on active, with `transition-all duration-300 ease-out`; color fades in the same transition.
+- Labels: inactive labels sit at low opacity and fade to full opacity on active or hover.
+- Rail itself enters with the existing `animate-fade-up` utility on mount.
+- Smooth scroll on click; respects `prefers-reduced-motion` by falling back to instant jump and dropping the length/opacity transitions.
 
 ## Files
-- New: `src/routes/bulk.tsx`, `src/components/site/BulkCalculator.tsx`
-- Edited: `src/components/site/TopBar.tsx` (add Bulk link, switch to TanStack `Link`)
-- Possibly new: `src/components/ui/slider.tsx` if not already in the project
+- New: `src/components/site/SectionRail.tsx`
+- Edited: `src/routes/index.tsx` (render `<SectionRail />`), `src/components/site/ScrollVideoHero.tsx` (add `id="hero"` to the section)
 
 ## Out of scope
-No changes to hero, About, Contact form, footer content, theme, or fonts. No backend — CTA is a `tel:` link.
+No changes to the top bar, hero scroll-scrub logic, forms, footer, or the `/bulk` page (the rail is home-page only, since that's the page with scrollable sections).
