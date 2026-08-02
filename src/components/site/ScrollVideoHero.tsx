@@ -105,7 +105,7 @@ export function ScrollVideoHero() {
   }, [duration]);
 
   return (
-    <section ref={sectionRef} className="relative" style={{ height: "360vh" }}>
+    <section id="hero" ref={sectionRef} className="relative" style={{ height: "360vh" }}>
       <div className="sticky top-0 h-screen w-full overflow-hidden">
         <video
           ref={videoRef}
