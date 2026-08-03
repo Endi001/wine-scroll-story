@@ -107,4 +107,4 @@ graph TD
 ### Manual Visual Tests
 1. **Scroll Animations**: Verify scroll performance and section snap functionality under Turbopack dev server.
 2. **Interactive Forms**: Validate that the Bulk Calculator and Contact forms work properly with validation/toaster alerts.
-3. **Analytics verification**: Ensure the google tag manager loads correctly in the network log.
+3. **Analytics verification**: Ensure the google tag manager loads correctly in the network log
