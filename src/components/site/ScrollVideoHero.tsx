@@ -2,8 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown } from "lucide-react";
-import heroMp4 from "@/assets/hero-wine.mp4.asset.json";
-import heroWebm from "@/assets/hero-wine.webm.asset.json";
 
 export function ScrollVideoHero() {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -45,7 +43,9 @@ export function ScrollVideoHero() {
     };
 
     // Time-based exponential smoothing, locked to display refresh
-    const tau = 0.09; // seconds — smaller = snappier, larger = smoother
+    const tau = 0.15; // Increased for a smoother scroll inertia feel
+    const frameDuration = 1 / 24; // 24fps video frame duration (~41.7ms)
+
     const tick = (ts: number) => {
       if (lastTs.current == null) lastTs.current = ts;
       const dt = Math.min((ts - lastTs.current) / 1000, 0.05);
@@ -54,7 +54,12 @@ export function ScrollVideoHero() {
       const alpha = 1 - Math.exp(-dt / tau);
       currentSmooth.current += (targetTime.current - currentSmooth.current) * alpha;
 
-      if (Math.abs(currentSmooth.current - video.currentTime) > 1 / 120) {
+      const diff = Math.abs(currentSmooth.current - video.currentTime);
+      const isSettling = Math.abs(targetTime.current - currentSmooth.current) < 0.01;
+
+      // Only set currentTime if not already seeking, and we have moved past a frame boundary
+      // or we are settling at the final position to avoid layout/decoding bottlenecks.
+      if (!video.seeking && (diff > frameDuration || (isSettling && diff > 0.005))) {
         try {
           video.currentTime = currentSmooth.current;
         } catch {
@@ -117,8 +122,7 @@ export function ScrollVideoHero() {
           disableRemotePlayback
           className="absolute inset-0 h-full w-full object-cover"
         >
-          <source src={heroWebm.url} type="video/webm" />
-          <source src={heroMp4.url} type="video/mp4" />
+          <source src="/hero-wine.mp4" type="video/mp4" />
         </video>
         {/* Cinematic gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/30 to-background" />
