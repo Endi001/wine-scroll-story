@@ -1,10 +1,13 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { Grape } from "lucide-react";
-import { Link, useRouterState } from "@tanstack/react-router";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export function TopBar() {
   const [scrolled, setScrolled] = useState(false);
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const pathname = usePathname();
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
     onScroll();
@@ -24,7 +27,7 @@ export function TopBar() {
       }`}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
-        <Link to="/" className="flex items-center gap-3 group">
+        <Link href="/" className="flex items-center gap-3 group">
           <span className="flex h-9 w-9 items-center justify-center rounded-full border border-accent/60 text-accent transition-colors group-hover:bg-accent group-hover:text-accent-foreground">
             <Grape className="h-4 w-4" />
           </span>
@@ -33,7 +36,7 @@ export function TopBar() {
           </span>
         </Link>
         <nav className="flex items-center gap-8">
-          <Link to="/bulk" className={navLink}>
+          <Link href="/bulk" className={navLink}>
             Bulk
           </Link>
           {pathname === "/" ? (
@@ -41,7 +44,7 @@ export function TopBar() {
               Contact
             </a>
           ) : (
-            <Link to="/" hash="contact" className={navLink}>
+            <Link href="/#contact" className={navLink}>
               Contact
             </Link>
           )}
@@ -50,3 +53,4 @@ export function TopBar() {
     </header>
   );
 }
+
