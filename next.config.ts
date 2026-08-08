@@ -21,8 +21,8 @@ const nextConfig: NextConfig = {
   images: { unoptimized: true },
   turbopack: {
     root: __dirname,
-    define: envDefines,
-  } as NextConfig["turbopack"],
+  },
+  compiler: { define: envDefines },
 };
 
 export default nextConfig;
