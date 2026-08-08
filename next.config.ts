@@ -1,5 +1,4 @@
 import type { NextConfig } from "next";
-import webpack from "webpack";
 
 // The generated Cloud client reads `import.meta.env.*` (Vite convention).
 // Next doesn't provide that, so inline the values at build time.
@@ -22,11 +21,8 @@ const nextConfig: NextConfig = {
   images: { unoptimized: true },
   turbopack: {
     root: __dirname,
-  },
-  webpack: (config) => {
-    config.plugins.push(new webpack.DefinePlugin(envDefines));
-    return config;
-  },
+    define: envDefines,
+  } as NextConfig["turbopack"],
 };
 
 export default nextConfig;
