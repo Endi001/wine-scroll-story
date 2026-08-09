@@ -5,7 +5,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 
 const WEBHOOK_URL =
-  "https://n8n.mylocaln8n.xyz/webhook-test/b0d75e3c-d8f7-4cea-b1a3-877f3180f332";
+  "https://n8n.mylocaln8n.xyz/webhook/b0d75e3c-d8f7-4cea-b1a3-877f3180f332";
 
 const schema = z.object({
   name: z.string().trim().min(1, "Please enter your name").max(100),
