@@ -4,6 +4,9 @@ import { useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
 
+const WEBHOOK_URL =
+  "https://n8n.mylocaln8n.xyz/webhook/b0d75e3c-d8f7-4cea-b1a3-877f3180f332";
+
 const schema = z.object({
   name: z.string().trim().min(1, "Please enter your name").max(100),
   email: z.string().trim().email("Please enter a valid email").max(255),
@@ -32,11 +35,32 @@ export function ContactSection() {
     }
     setErrors({});
     setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 700));
-    setSubmitting(false);
-    toast.success("Message sent. We'll be in touch soon.");
-    setValues({ name: "", email: "", question: "" });
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+
+    try {
+      const response = await fetch(WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...result.data,
+          submittedAt: new Date().toISOString(),
+          source: "wine-scroll-story-contact",
+        }),
+        signal: controller.signal,
+      });
+      if (!response.ok) throw new Error(`Request failed: ${response.status}`);
+      toast.success("Message sent. We'll be in touch soon.");
+      setValues({ name: "", email: "", question: "" });
+    } catch {
+      toast.error("Something went wrong. Please try again or call us.");
+    } finally {
+      clearTimeout(timeout);
+      setSubmitting(false);
+    }
   };
+
 
   const field =
     "w-full bg-transparent border-b border-border/60 py-3 text-foreground placeholder:text-muted-foreground/60 focus:border-accent focus:outline-none transition-colors";
