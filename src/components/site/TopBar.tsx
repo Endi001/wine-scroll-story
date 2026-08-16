@@ -36,6 +36,9 @@ export function TopBar() {
           </span>
         </Link>
         <nav className="flex items-center gap-8">
+          <Link href="/faq" className={navLink}>
+            FAQ
+          </Link>
           <Link href="/bulk" className={navLink}>
             Bulk
           </Link>
