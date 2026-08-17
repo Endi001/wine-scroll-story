@@ -135,7 +135,7 @@ export function SiteSearch() {
       semanticSearch(trimmed, 6)
         .then((results) => {
           if (requestId.current !== id) return;
-          setSemantic(results.filter((r) => r.similarity > 0.18));
+          setSemantic(results.filter((r) => r.similarity > 0.12));
         })
         .catch(() => {
           if (requestId.current === id) setSemantic(null);
