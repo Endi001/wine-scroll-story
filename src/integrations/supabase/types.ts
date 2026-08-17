@@ -14,13 +14,59 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      search_documents: {
+        Row: {
+          content: string
+          created_at: string
+          description: string
+          doc_key: string
+          embedding: string
+          href: string
+          id: string
+          section: string
+          title: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          description?: string
+          doc_key: string
+          embedding: string
+          href: string
+          id?: string
+          section: string
+          title: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          description?: string
+          doc_key?: string
+          embedding?: string
+          href?: string
+          id?: string
+          section?: string
+          title?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      match_documents: {
+        Args: { match_count?: number; query_embedding: string }
+        Returns: {
+          content: string
+          description: string
+          doc_key: string
+          href: string
+          section: string
+          similarity: number
+          title: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

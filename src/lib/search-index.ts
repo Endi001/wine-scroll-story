@@ -1,3 +1,6 @@
+/** Embedding model used both when indexing content and when embedding a query. */
+export const EMBEDDING_MODEL = "Xenova/all-MiniLM-L6-v2";
+
 export type SearchRecord = {
   id: string;
   title: string;
@@ -7,11 +10,17 @@ export type SearchRecord = {
   href: string;
 };
 
+/** The exact text that gets turned into a vector — keep indexer and query in sync. */
+export function embeddingText(r: SearchRecord): string {
+  return `${r.section}. ${r.title}. ${r.description} ${r.content}`;
+}
+
 export type FaqItem = {
   id: string;
   question: string;
   answer: string;
 };
+
 
 export const FAQ_ITEMS: FaqItem[] = [
   {

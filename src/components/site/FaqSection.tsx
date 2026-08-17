@@ -16,8 +16,8 @@ export function FaqSection() {
           Questions, <span className="italic text-accent">answered.</span>
         </h1>
         <p className="mt-4 max-w-xl text-muted-foreground">
-          Search the estate — pages, our story and every answer below — results
-          appear as you type.
+          Ask in your own words — the search understands meaning, not just keywords, and
+          ranks every page and answer as you type.
         </p>
 
         <div className="mt-12">
