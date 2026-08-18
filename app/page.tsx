@@ -4,6 +4,7 @@ import { AboutSection } from "@/components/site/AboutSection";
 import { ContactSection } from "@/components/site/ContactSection";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SectionRail } from "@/components/site/SectionRail";
+import { Logos3 } from "@/components/ui/logos3";
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
       <SectionRail />
       <main>
         <ScrollVideoHero />
+        <Logos3 className="border-t border-border/40 py-16" />
         <AboutSection />
         <ContactSection />
       </main>
